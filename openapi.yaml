@@ -1,0 +1,140 @@
+openapi: 3.0.0
+info:
+  title: Task API
+  version: 1.0.0
+  description: API for managing asynchronous tasks
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /tasks:
+    post:
+      summary: Create a new task
+      description: Creates a new task with the provided data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreateRequest'
+      responses:
+        '200':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCreateResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '415':
+          description: Unsupported media type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /tasks/{id}:
+    get:
+      summary: Get task status
+      description: Retrieves the status and result of a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Task ID
+      responses:
+        '200':
+          description: Task found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          description: Invalid task ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+components:
+  schemas:
+    TaskCreateRequest:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: string
+          description: Data to be processed by the task
+
+    TaskCreateResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of the created task
+
+    TaskResponse:
+      type: object
+      required:
+        - id
+        - data
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Task ID
+        data:
+          type: string
+          description: Original task data
+        result:
+          type: string
+          description: Task processing result
+        status:
+          type: string
+          enum:
+            - PENDING
+            - STARTED
+            - DONE
+            - FAIL
+          description: Task status
