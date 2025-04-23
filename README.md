@@ -1,5 +1,5 @@
 # Task Manager
-Асинхронная очередь и REST API на Golang
+Async queue with REST API on Golang
 
 ```mermaid
 sequenceDiagram
